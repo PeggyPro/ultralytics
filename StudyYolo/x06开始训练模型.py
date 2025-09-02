@@ -3,35 +3,49 @@
 
 # x06开始训练模型.py
 
-############################## 这是分批次训练 #################################
+############################## 1.这是分批次训练 #################################
 import torch
-
 from ultralytics import YOLO
+import ultralytics
 
 if __name__ == '__main__':
-    print("torch.__version__: ", torch.__version__)
-    print("torch.version.cuda: ", torch.version.cuda)
-    print("torch.cuda.is_available: ", torch.cuda.is_available())
-    print("torch.cuda.device_count: ", torch.cuda.device_count())
+    print("torch.__version__:", torch.__version__)
+    print("torch.version.cuda:", torch.version.cuda)
+    print("torch.cuda.is_available:", torch.cuda.is_available())
+    print("torch.cuda.device_count:", torch.cuda.device_count())
+    print("ultralytics.__version__:", ultralytics.__version__)
 
+    # 4GB 显存建议使用 nano 模型
     a1 = YOLO('yolo11n.pt')
 
     a1.train(
-        data='D:/Users/fuhan/D-Github/rengongzhineng/ultralytics/StudyYolo/data_stjdb.yaml',
-        epochs=300,
-        imgsz=1024,     # 若仍 OOM，则试 448 或 416
-        batch=-1,      # AutoBatch
+        data='D:/Users/fuhan/D-Github/rengongzhineng/ultralytics/studyYolo/data_stjdb.yaml',
+        epochs=150,          # 6500 张样本建议 120~200；配合早停
+        imgsz=512,           # 4GB 显存更稳的分辨率；小目标多再考虑 640
+        batch=-1,            # AutoBatch 自动探测最大可用 batch
         device=0,
-        workers=0,
-        amp=True,
-        val=True       # 先留着；要更省资源可改 False
+        workers=0,           # Windows 上 0 最稳
+        amp=True,            # 混合精度，省显存+提速
+        val=True,
+        patience=50,         # 早停
+        cache=False,         # 内存足够(≥32GB)可改为 'ram'
+        seed=0,
+
+        # 小批次时让训练更稳定的设置（无梯度累积时推荐）
+        lr0=0.005,           # 初始学习率略小一点（默认 0.01），小 batch 更稳
+        warmup_epochs=5,     # 增加 warmup，配合小批次更稳
+        # 说明：Ultralytics 会按 nbs=64 自动缩放 lr 到 batch/nbs，保持默认即可
+        # 如果你希望“不要缩小太多”，可以把 nbs 设置得更接近实际 batch（不必须）
+        # nbs=32,
+        project='runs/train',
+        name='y11n_512_e150_4GB_noacc'
     )
 
     print('训练完成')
 
 
 
-############################## 这是一次训练所有的 #################################
+############################## 2.这是一次训练所有的 #################################
 
 # if __name__ == '__main__':
 #     # 检测GPU是否可用

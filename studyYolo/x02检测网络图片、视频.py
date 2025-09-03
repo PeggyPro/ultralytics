@@ -15,7 +15,7 @@ from ultralytics import YOLO
 
 ########################## 2.打印详情(内存不会溢出) ############################
 
-model = YOLO('yolo11n.pt')
+model = YOLO('stjdb.pt')
 
 for r in model.predict(source=0, show=True, stream=True, conf=0.5, imgsz=640):
     boxes = r.boxes  # Boxes 对象

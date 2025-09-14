@@ -7,6 +7,16 @@
 import torch
 from ultralytics import YOLO
 import ultralytics
+import matplotlib.pyplot as plt
+from matplotlib import font_manager
+
+# 确保中文字体可以被matplotlib识别
+font_path = "C:/Windows/Fonts/simsun.ttc"  # 替换为你系统中实际的中文字体路径
+font_prop = font_manager.FontProperties(fname=font_path)
+
+# 使用该字体设置matplotlib的全局参数
+plt.rcParams['font.family'] = font_prop.get_name()
+plt.rcParams['axes.unicode_minus'] = False  # 解决负号 '-' 显示为方块的问题
 
 if __name__ == '__main__':
     print("torch.__version__:", torch.__version__)
@@ -19,7 +29,7 @@ if __name__ == '__main__':
     a1 = YOLO('yolo11n.pt')
 
     a1.train(
-        data='D:/Users/fuhan/D-Github/rengongzhineng/ultralytics/studyYolo/data_stjdb.yaml',
+        data='D:/Users/fuhan/D-Github/rengongzhineng/ultralytics/studyYolo/data_dnf.yaml',
         epochs=150,          # 6500 张样本建议 120~200；配合早停
         imgsz=512,           # 4GB 显存更稳的分辨率；小目标多再考虑 640
         batch=-1,            # AutoBatch 自动探测最大可用 batch

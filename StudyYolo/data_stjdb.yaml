@@ -1,9 +1,0 @@
-path: "D:/Users/fuhan/D-Github/rengongzhineng/ultralytics/studyYolo/xun/stjdb"
-
-train: train/images
-val: valid/images
-test: test/images
-
-nc: 3
-
-names: ['Paper', 'Rock', 'Scissors']

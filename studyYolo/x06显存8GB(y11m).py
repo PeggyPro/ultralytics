@@ -35,9 +35,9 @@ if __name__ == '__main__':
 
     a1.train(
         data='D:/Users/fh704/D-Documents/D-Github/ultralytics/studyYolo/data_stjdb.yaml',
-        epochs=200,                  # 配合早停，等价于 150~220 的有效训练
-        imgsz=960,                   # 832/960 二选一；显存足够就 960
-        batch=2,                    # 先用 24，观察显存后再试 28/32，直到接近上限
+        epochs=200,          # 6500 张样本建议 120~200；配合早停
+        imgsz=640,           # 4GB 显存更稳的分辨率；小目标多再考虑 640
+        batch=-1,            # AutoBatch 自动探测最大可用 batch
         device=0,
         workers=4,                   # 依 CPU 再试 8/12/16，观察 CPU 占用
         amp=False,                   # 1080（Pascal）建议关 AMP，换显存来提吞吐

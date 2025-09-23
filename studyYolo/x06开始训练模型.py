@@ -41,7 +41,7 @@ if __name__ == '__main__':
         amp=True,            # 混合精度，省显存+提速
         val=True,
         patience=50,         # 早停
-        cache='ram',         # 使用RAM缓存加速数据加载（需要≥32GB内存）
+        cache=False,         # 使用RAM缓存加速数据加载（需要≥32GB内存）
         seed=0,
 
         # 最大化性能的参数设置

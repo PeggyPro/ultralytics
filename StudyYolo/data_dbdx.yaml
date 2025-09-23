@@ -1,6 +1,0 @@
-path: D:\Users\fuhan\D-Github\rengongzhineng\ultralytics\学习yolov\xun # 数据集根目录
-train: images/train # 训练集图片路径
-val: images/val # 验证集图片路径
-nc: 4 # 类别数量
-# 东北大学
-names: [ '红色', '绿色', '蓝色' ,'黄色' ] # 类别名称

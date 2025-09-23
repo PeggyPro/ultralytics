@@ -10,6 +10,9 @@ import ultralytics
 import matplotlib.pyplot as plt
 from matplotlib import font_manager
 
+import os
+os.environ['KMP_DUPLICATE_LIB_OK'] = 'True'
+
 # 确保中文字体可以被matplotlib识别
 font_path = "C:/Windows/Fonts/simsun.ttc"  # 替换为你系统中实际的中文字体路径
 font_prop = font_manager.FontProperties(fname=font_path)
@@ -26,12 +29,12 @@ if __name__ == '__main__':
     print("ultralytics.__version__:", ultralytics.__version__)
 
     # 4GB 显存建议使用 nano 模型
-    a1 = YOLO('yolo11n.pt')
+    a1 = YOLO('yolo11s.pt')
 
     a1.train(
         data='D:/Users/fh704/D-Documents/D-Github/ultralytics/studyYolo/data_stjdb.yaml',
         epochs=1024,          # 6500 张样本建议 120~200；配合早停
-        imgsz=512,           # 4GB 显存更稳的分辨率；小目标多再考虑 640
+        imgsz=640,           # 4GB 显存更稳的分辨率；小目标多再考虑 640
         batch=-1,            # AutoBatch 自动探测最大可用 batch
         device=0,
         workers=0,           # Windows 上 0 最稳

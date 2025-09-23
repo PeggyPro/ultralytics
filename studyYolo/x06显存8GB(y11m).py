@@ -21,6 +21,8 @@ font_prop = font_manager.FontProperties(fname=font_path)
 plt.rcParams['font.family'] = font_prop.get_name()
 plt.rcParams['axes.unicode_minus'] = False  # 解决负号 '-' 显示为方块的问题
 
+torch.backends.cudnn.benchmark = True  # 固定尺寸更快
+
 if __name__ == '__main__':
     print("torch.__version__:", torch.__version__)
     print("torch.version.cuda:", torch.version.cuda)
@@ -29,39 +31,37 @@ if __name__ == '__main__':
     print("ultralytics.__version__:", ultralytics.__version__)
 
     # 4GB 显存建议使用 nano 模型
-    a1 = YOLO('yolo11s.pt')
+    a1 = YOLO('yolo11m.pt')  # 若显存不够再退回 yolo11s.pt
 
     a1.train(
         data='D:/Users/fh704/D-Documents/D-Github/ultralytics/studyYolo/data_stjdb.yaml',
-        epochs=1024,          # 6500 张样本建议 120~200；配合早停
-        imgsz=640,           # 4GB 显存更稳的分辨率；小目标多再考虑 640
-        batch=-1,            # AutoBatch 自动探测最大可用 batch
+        epochs=200,                  # 配合早停，等价于 150~220 的有效训练
+        imgsz=960,                   # 832/960 二选一；显存足够就 960
+        batch=2,                    # 先用 24，观察显存后再试 28/32，直到接近上限
         device=0,
-        workers=4,           # 增加workers充分利用CPU（如果CPU性能足够）
-        amp=True,            # 混合精度，省显存+提速
+        workers=4,                   # 依 CPU 再试 8/12/16，观察 CPU 占用
+        amp=False,                   # 1080（Pascal）建议关 AMP，换显存来提吞吐
+        cache=True,                  # 内存≥32GB 就开；不足则 False
         val=True,
-        patience=50,         # 早停
-        cache=False,         # 使用RAM缓存加速数据加载（需要≥32GB内存）
-        seed=0,
+        patience=50,                 # 早停，稳定后自动停止
 
-        # 最大化性能的参数设置
-        lr0=0.01,            # 恢复默认学习率，充分利用大batch
-        warmup_epochs=3,     # 减少warmup，更快进入正常训练
-        nbs=64,              # 保持默认nominal batch size
-        cos_lr=True,         # 使用余弦学习率调度，训练更稳定
-        close_mosaic=10,     # 最后10个epoch关闭mosaic增强，提高精度
+        # 学习率与调度（保持稳健）
+        lr0=0.01,                    # YOLO 的 nbs 缩放会自动按 batch 比例调整
+        warmup_epochs=3,
+        nbs=64,
+        cos_lr=True,
+        close_mosaic=10,
 
-        # 数据增强增强（充分利用显存）
-        hsv_h=0.015,         # 色调增强
-        hsv_s=0.7,           # 饱和度增强
-        hsv_v=0.4,           # 亮度增强
-        translate=0.1,       # 平移增强
-        scale=0.5,           # 缩放增强
-        fliplr=0.5,          # 水平翻转
-        mosaic=1.0,          # mosaic数据增强
+        # 数据增强：减轻 CPU 端重负，避免“喂不动”
+        mosaic=0.5,
+        mixup=0.0,
+        copy_paste=0.0,
+        hsv_h=0.015, hsv_s=0.7, hsv_v=0.4,
+        translate=0.1, scale=0.5, fliplr=0.5,
 
+        # 其他
         project='runs/train',
-        name='y11s_640_e1024_8GB_max'
+        name='y11m_960_b24_balanced'
     )
 
     print('训练完成')
